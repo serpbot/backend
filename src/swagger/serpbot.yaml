@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  title: Serpbot
+  version: 1.0.0
+servers:
+- url: "/api"
+paths:
+  /login:
+    post:
+      tags:
+      - User
+      operationId: login
+      requestBody:
+        description: User
+        content:
+          application/json:
+            schema:
+              required:
+              - password
+              - username
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.user
+      x-codegen-request-body-name: body
+  /signup:
+    post:
+      tags:
+      - User
+      operationId: signup
+      requestBody:
+        description: User
+        content:
+          application/json:
+            schema:
+              required:
+              - email
+              - password
+              - username
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.user
+      x-codegen-request-body-name: body
+  /trend/{website_id}/{engine}:
+    get:
+      tags:
+        - Website
+      operationId: get_trend_for_website
+      parameters:
+        - name: engine
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: website_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.trend
+  /website:
+    get:
+      tags:
+      - Website
+      operationId: get_all_websites
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.website
+    post:
+      tags:
+      - Website
+      operationId: add_website
+      requestBody:
+        description: Website
+        content:
+          application/json:
+            schema:
+              required:
+              - domain
+              - keywords
+              type: object
+              properties:
+                domain:
+                  type: string
+                keywords:
+                  type: array
+                  items:
+                    type: string
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.website
+      x-codegen-request-body-name: body
+  /website/{id}:
+    get:
+      tags:
+      - Website
+      operationId: get_website
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.website
+    put:
+      tags:
+      - Website
+      operationId: update_website
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Website
+        content:
+          application/json:
+            schema:
+              required:
+              - keywords
+              type: object
+              properties:
+                keywords:
+                  type: array
+                  items:
+                    type: string
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.website
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Website
+      operationId: delete_website
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.website
+components:
+  schemas:
+    Response:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - failure
+        message:
+          type: string
+        data:
+          type: object
+          properties: {}
