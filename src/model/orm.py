@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """SQLAlchemy db model"""
 
+from sqlalchemy_serializer import SerializerMixin
 from src.config import db
 
 
-class Client(db.Model):
+class Client(db.Model, SerializerMixin):
     """Client table in db"""
     __tablename__ = "clients"
     username = db.Column(db.String(255), primary_key=True)
@@ -12,17 +13,8 @@ class Client(db.Model):
 
     websites = db.relationship("Website")
 
-    @property
-    def serialized(self):
-        """Serializes client object"""
-        return {
-            "username": self.username,
-            "email": self.email,
-            "websites": self.websites
-        }
 
-
-class Website(db.Model):
+class Website(db.Model, SerializerMixin):
     """Website table in db"""
     __tablename__ = "websites"
     id = db.Column(db.String(255), primary_key=True)
@@ -31,37 +23,16 @@ class Website(db.Model):
 
     keywords = db.relationship("Keyword")
 
-    @property
-    def serialized(self):
-        """Serializes client object"""
-        return {
-            "id": self.id,
-            "domain": self.domain,
-            "keywords": self.keywords
-        }
 
-
-class Keyword(db.Model):
+class Keyword(db.Model, SerializerMixin):
     """Website table in db"""
     __tablename__ = "keywords"
     id = db.Column(db.String(255), primary_key=True)
     websiteId = db.Column(db.String(255), db.ForeignKey("websites.id"))
     name = db.Column(db.String(255), nullable=False)
 
-    website = db.relationship("Website", viewonly=True)
 
-    @property
-    def serialized(self):
-        """Serializes client object"""
-        return {
-            "id": self.id,
-            "name": self.name,
-            "latest": self.latest,
-            "best": self.best
-        }
-
-
-class Trend(db.Model):
+class Trend(db.Model, SerializerMixin):
     """Statistics table in db"""
     __tablename__ = "trends"
     id = db.Column(db.String(255), primary_key=True)
@@ -69,14 +40,3 @@ class Trend(db.Model):
     position = db.Column(db.Integer, nullable=False)
     engine = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
-
-    @property
-    def serialized(self):
-        """Serializes client object"""
-        return {
-            "id": self.id,
-            "keyword": self.keyword,
-            "position": self.position,
-            "engine": self.engine,
-            "date": self.date
-        }

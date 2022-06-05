@@ -5,6 +5,7 @@ from uuid import uuid4
 import validators
 from http import HTTPStatus
 from flask import _request_ctx_stack
+from sqlalchemy import and_
 from src.lib.response import HttpResponse
 from src.model.orm import db, Website, Keyword
 from src.lib.flask_cognito import cognito_auth_header_required_api
@@ -23,7 +24,7 @@ def get_website(id):
             keywords = []
             for keyword in website.keywords:
                 keywords.append(keyword.name)
-            temp_website = website.serialized
+            temp_website = website.to_dict()
             temp_website["keywords"] = keywords
             temp_website["num_keywords"] = len(keywords)
             return HttpResponse().success(status=HTTPStatus.OK, website=temp_website)
@@ -42,7 +43,7 @@ def get_all_websites():
             keywords = []
             for keyword in website.keywords:
                 keywords.append(keyword.name)
-            temp_website = website.serialized
+            temp_website = website.to_dict()
             temp_website["keywords"] = keywords
             temp_website["num_keywords"] = len(keywords)
             websites.append(temp_website)
@@ -57,7 +58,7 @@ def add_website(body):
     try:
         if validators.domain(body["domain"]):
             # Check if domain already exist
-            domain = Website.query.filter(Website.domain == body["domain"]).first()
+            domain = Website.query.filter(and_(Website.domain == body["domain"], Website.username==_request_ctx_stack.top.cogauth_username)).one_or_none()
             if domain is None:
                 keywords = []
                 for keyword in {k for k in body["keywords"]}:

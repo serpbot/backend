@@ -36,6 +36,7 @@ def validate_input(body, fields):
                                           error="Field (%s) is blank" % (field))
     if current_app.config.get("TESTING"):
         return None
-    # if CognitoUser.validate_recaptcha(body["recaptcha"]):
-    #     return None
-    return None
+    if CognitoUser.validate_recaptcha(body["recaptcha"]):
+         return None
+    return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY,
+                                  error="Invalid captcha provided")

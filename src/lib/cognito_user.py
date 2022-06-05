@@ -18,8 +18,8 @@ log = logging.getLogger(__name__)
 
 class CognitoUser:
     """Boto3 user handler class"""
-    LOGIN_FIELDS = ["username", "password"]
-    SIGN_UP_FIELDS = ["username", "email", "password"]
+    LOGIN_FIELDS = ["username", "password", "recaptcha"]
+    SIGN_UP_FIELDS = ["username", "email", "password", "recaptcha"]
 
     @staticmethod
     def get_secret_hash(username):
