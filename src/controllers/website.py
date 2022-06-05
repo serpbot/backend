@@ -12,6 +12,7 @@ from src.lib.flask_cognito import cognito_auth_header_required_api
 
 log = logging.getLogger(__name__)
 
+WEBSITE_LIMIT = 5
 
 @cognito_auth_header_required_api
 def get_website(id):
@@ -58,8 +59,13 @@ def add_website(body):
     try:
         if validators.domain(body["domain"]):
             # Check if domain already exist
-            domain = Website.query.filter(and_(Website.domain == body["domain"], Website.username==_request_ctx_stack.top.cogauth_username)).one_or_none()
+            domain = Website.query.filter(and_(Website.domain == body["domain"], Website.username == _request_ctx_stack.top.cogauth_username)).one_or_none()
             if domain is None:
+                # Check if limit is reached
+                num_websites = Website.query.filter(Website.username == _request_ctx_stack.top.cogauth_username).count()
+                if num_websites >= WEBSITE_LIMIT:
+                    return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY, error="Reached website limit (%s)" % (WEBSITE_LIMIT))
+
                 keywords = []
                 for keyword in {k for k in body["keywords"]}:
                     if keyword == "":
