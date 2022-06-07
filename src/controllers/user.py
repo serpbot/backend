@@ -2,9 +2,11 @@
 
 import logging
 from http import HTTPStatus
-from flask import current_app
+from flask import current_app, _request_ctx_stack
 from src.lib.response import HttpResponse
 from src.lib.cognito_user import CognitoUser
+from src.lib.flask_cognito import cognito_auth_header_required_api
+from src.model.orm import Client, db
 
 log = logging.getLogger(__name__)
 
@@ -39,3 +41,14 @@ def validate_input(body, fields):
          return None
     return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY,
                                   error="Invalid captcha provided")
+
+@cognito_auth_header_required_api
+def update_user(body):
+    if "notifications" in body and isinstance(body["notifications"], bool):
+        client = Client.query.get(_request_ctx_stack.top.cogauth_username)
+        client.notifications = body["notifications"]
+        db.session.commit()
+        return HttpResponse().success(status=HTTPStatus.OK)
+    else:
+        return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY,
+                                      error="Field (notifications) is invalid")

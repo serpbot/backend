@@ -5,6 +5,50 @@ info:
 servers:
 - url: "/api"
 paths:
+  /user:
+    put:
+      tags:
+        - User
+      operationId: update_user
+      requestBody:
+        description: User
+        content:
+          application/json:
+            schema:
+              required:
+                - notifications
+              type: object
+              properties:
+                notifications:
+                  type: boolean
+        required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        422:
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Response"
+      x-openapi-router-controller: src.controllers.user
+      x-codegen-request-body-name: body
   /login:
     post:
       tags:

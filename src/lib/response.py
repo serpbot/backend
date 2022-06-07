@@ -2,8 +2,10 @@
 
 """Custom http response handler"""
 
+
 class HttpResponse():
     """Custom http response class"""
+
     def _resp(self, status, **kwargs):
         data = {}
         error = ""
