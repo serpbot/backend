@@ -13,6 +13,7 @@ from src.lib.flask_cognito import cognito_auth_header_required_api
 log = logging.getLogger(__name__)
 
 WEBSITE_LIMIT = 5
+KEYWORD_LIMIT = 5
 
 @cognito_auth_header_required_api
 def get_website(id):
@@ -109,6 +110,11 @@ def update_website(id, body):
         if website is None:
             return HttpResponse().failure(HTTPStatus.NOT_FOUND, error="Website does not exist")
         elif website.username == _request_ctx_stack.top.cogauth_username:
+            # Check if limit is reached
+            if len(body["keywords"]) >= KEYWORD_LIMIT:
+                return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY,
+                                              error="Reached keyword limit (%s)" % (KEYWORD_LIMIT))
+
             # Remove unwanted keywords
             temp_keywords = []
             for keyword in website.keywords:
