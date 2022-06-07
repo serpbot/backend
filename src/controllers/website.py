@@ -27,7 +27,7 @@ def get_website(id):
                 keywords.append(keyword.name)
             temp_website = website.to_dict()
             temp_website["keywords"] = keywords
-            temp_website["num_keywords"] = len(keywords)
+            temp_website["numKeywords"] = len(keywords)
             return HttpResponse().success(status=HTTPStatus.OK, website=temp_website)
         else:
             return HttpResponse().failure(status=HTTPStatus.NOT_FOUND, error="Website does not exist")
@@ -46,7 +46,7 @@ def get_all_websites():
                 keywords.append(keyword.name)
             temp_website = website.to_dict()
             temp_website["keywords"] = keywords
-            temp_website["num_keywords"] = len(keywords)
+            temp_website["numKeywords"] = len(keywords)
             websites.append(temp_website)
         return HttpResponse().success(status=HTTPStatus.OK, websites=websites)
     except Exception as exception:

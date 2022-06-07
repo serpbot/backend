@@ -16,7 +16,6 @@ def login(body):
         return response
     return CognitoUser.initiate_auth(body["username"], body["password"])
 
-
 def signup(body):
     """Handle signup event"""
     response = validate_input(body, CognitoUser.SIGN_UP_FIELDS)

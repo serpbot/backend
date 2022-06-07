@@ -49,7 +49,10 @@ class CognitoUser:
                     "username": username,
                     "password": password,
                 })
-            return HttpResponse().success(HTTPStatus.OK, token=resp["AuthenticationResult"]["IdToken"])
+            db_client = Client.query.filter(Client.username == username).one_or_none()
+            return HttpResponse().success(HTTPStatus.OK, user={"token": resp["AuthenticationResult"]["IdToken"],
+                                                               "username": username,
+                                                               "notifications": db_client.notifications})
         except client.exceptions.NotAuthorizedException:
             log.warning("The username or password is incorrect for: %s", username)
             return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY,

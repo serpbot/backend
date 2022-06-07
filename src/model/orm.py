@@ -10,6 +10,7 @@ class Client(db.Model, SerializerMixin):
     __tablename__ = "clients"
     username = db.Column(db.String(255), primary_key=True)
     email = db.Column(db.String(255), nullable=False)
+    notifications = db.Column(db.Boolean, default=False)
 
     websites = db.relationship("Website")
 
