@@ -3,7 +3,7 @@ info:
   title: Serpbot
   version: 1.0.0
 servers:
-- url: "/api"
+- url: "/"
 paths:
   /user:
     put:
@@ -159,6 +159,11 @@ paths:
             type: string
         - name: website_id
           in: path
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
           required: true
           schema:
             type: string

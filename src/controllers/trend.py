@@ -1,29 +1,50 @@
 import json
 from http import HTTPStatus
 from flask import _request_ctx_stack
-from sqlalchemy import and_
 
+from sqlalchemy import and_, func
+from datetime import datetime, timedelta
 from src.lib.flask_cognito import cognito_auth_header_required_api, log
 from src.lib.response import HttpResponse
-from src.model.orm import Website,  Trend
+from src.model.orm import Website, Trend
+
+MAX_RANK = 100
+
 
 @cognito_auth_header_required_api
-def get_trend_for_website(website_id, engine):
+def get_trend_for_website(website_id, engine, period):
     try:
-
         website = Website.query.get(website_id)
         if website is None or website.username != _request_ctx_stack.top.cogauth_username:
             return HttpResponse().failure(status=HTTPStatus.NOT_FOUND, error="Website does not exist")
         if engine != "google" and engine != "bing":
             return HttpResponse().failure(status=HTTPStatus.NOT_FOUND, error="Engine does not exist")
-        
+
         tempTrends = {}
         result = {"keywords": [], "labels": []}
         if website is not None:
             for keyword in website.keywords:
                 if keyword.name not in tempTrends:
                     tempTrends[keyword.name] = []
-                for trend in Trend.query.filter_by(keyword=keyword.id).filter_by(engine=engine).order_by(Trend.date).all():
+
+                if period == "30d":
+                    thirty_days_ago = (datetime.today() - timedelta(days=30)).date()
+                    trends = Trend.query.filter(Trend.keyword == keyword.id, Trend.engine == engine,
+                                                Trend.date >= thirty_days_ago).order_by(
+                        Trend.date).all()
+                elif period == "7d":
+                    seven_days_ago = (datetime.today() - timedelta(days=7)).date()
+                    trends = Trend.query.filter(Trend.keyword == keyword.id, Trend.engine == engine,
+                                                Trend.date >= seven_days_ago).order_by(
+                        Trend.date).all()
+                elif period == "all":
+                    trends = Trend.query.filter(Trend.keyword == keyword.id, Trend.engine == engine).order_by(
+                        Trend.date).all()
+                else:
+                    return HttpResponse().failure(status=HTTPStatus.UNPROCESSABLE_ENTITY,
+                                                  error="Invalid period selected. Must be one of: 7d, 30d, all")
+
+                for trend in trends:
                     if trend.date not in result["labels"]:
                         result["labels"].append(trend.date)
                     tempTrends[keyword.name].append({str(trend.date): trend.position})
@@ -43,14 +64,13 @@ def get_trend_for_website(website_id, engine):
                         # Keyword has rank associated to it on this specific day
                         if str(date) in tempTrend:
                             # Keep track of the rank
-                            rank = tempTrend[str(date)]
+                            rank = tempTrend[str(date)] if tempTrend[str(date)] != -1 else MAX_RANK
                             break
                     for idx, data in enumerate(result["keywords"]):
                         # Write the rank to the correct keyword in the result object
                         if data["label"] == keyword:
                             result["keywords"][idx]["data"].append(rank)
                             break
-
 
             return HttpResponse().success(status=HTTPStatus.OK, trend=result)
         else:
