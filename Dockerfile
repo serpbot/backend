@@ -13,4 +13,4 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 5000
 
-ENTRYPOINT ["gunicorn", "--preload", "--config", "gunicorn_config.py", "--chdir", "src", "server:app"]
+ENTRYPOINT ["gunicorn", "--config", "gunicorn_config.py", "--chdir", "src", "server:app"]
