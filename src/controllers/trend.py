@@ -59,7 +59,7 @@ def get_trend_for_website(website_id, engine, period):
             for date in result["labels"]:
                 # Iterate through the keywords to check if their rank has been fetched on this specific date
                 for keyword in tempTrends:
-                    rank = 0
+                    rank = None
                     for tempTrend in tempTrends[keyword]:
                         # Keyword has rank associated to it on this specific day
                         if str(date) in tempTrend:
