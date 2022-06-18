@@ -30,12 +30,12 @@ def get_trend_for_website(website_id, engine, period):
                 if period == "30d":
                     thirty_days_ago = (datetime.today() - timedelta(days=30)).date()
                     trends = Trend.query.filter(Trend.keyword == keyword.id, Trend.engine == engine,
-                                                Trend.date >= thirty_days_ago).order_by(
+                                                Trend.date > thirty_days_ago).order_by(
                         Trend.date).all()
                 elif period == "7d":
                     seven_days_ago = (datetime.today() - timedelta(days=7)).date()
                     trends = Trend.query.filter(Trend.keyword == keyword.id, Trend.engine == engine,
-                                                Trend.date >= seven_days_ago).order_by(
+                                                Trend.date > seven_days_ago).order_by(
                         Trend.date).all()
                 elif period == "all":
                     trends = Trend.query.filter(Trend.keyword == keyword.id, Trend.engine == engine).order_by(
