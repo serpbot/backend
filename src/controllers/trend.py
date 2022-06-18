@@ -59,7 +59,7 @@ def get_trend_for_website(website_id, engine, period):
             for date in result["labels"]:
                 # Iterate through the keywords to check if their rank has been fetched on this specific date
                 for keyword in tempTrends:
-                    rank = None
+                    rank = -1
                     for tempTrend in tempTrends[keyword]:
                         # Keyword has rank associated to it on this specific day
                         if str(date) in tempTrend:
@@ -71,7 +71,6 @@ def get_trend_for_website(website_id, engine, period):
                         if data["label"] == keyword:
                             result["keywords"][idx]["data"].append(rank)
                             break
-
             return HttpResponse().success(status=HTTPStatus.OK, trend=result)
         else:
             return HttpResponse().failure(status=HTTPStatus.NOT_FOUND, error="Website does not exist")
